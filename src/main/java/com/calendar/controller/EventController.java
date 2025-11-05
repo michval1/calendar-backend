@@ -89,11 +89,17 @@ public class EventController {
     @PutMapping("/{eventId}")
     public ResponseEntity<?> updateEvent(@PathVariable Integer eventId, @RequestBody Event event) {
         try {
-            System.out.println("\n" + "\"/{eventId}\"" + event+"\n");
+            System.out.println("\n=== UPDATE EVENT REQUEST ===");
+            System.out.println("Event ID: " + eventId);
+            System.out.println("Event Data: " + event);
+            System.out.println("UserPermissions from request: " + event.getUserPermissions());
+            System.out.println("SharedWith from request: " + event.getSharedWith());
+            System.out.println("===========================\n");
 
             Event updatedEvent = eventService.updateEvent(eventId, event);
             return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Failed to update event: " + e.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
