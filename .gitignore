@@ -1,0 +1,25 @@
+# Build outputs
+target/
+build/
+*.jar
+*.war
+
+# Compiled classes
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+logs/
+
+# Environment configs
+**/application-*.yml
+**/application-*.properties
+
+# OS files
+.DS_Store
+Thumbs.db
