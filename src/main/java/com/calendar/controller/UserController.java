@@ -126,4 +126,56 @@ public class UserController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // ADMIN ENDPOINTS
+
+    /**
+     * DELETE /api/users/{userId}
+     * Admin endpoint to delete a user
+     */
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Integer userId) {
+        try {
+            userService.deleteUser(userId);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User deleted successfully");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to delete user: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * PUT /api/users/{userId}
+     * Admin endpoint to update a user
+     */
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> updateUser(@PathVariable Integer userId, @RequestBody User userDetails) {
+        try {
+            User updatedUser = userService.updateUser(userId, userDetails);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to update user: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * GET /api/users/search?term={searchTerm}
+     * Search users by username or email
+     */
+    @GetMapping("/search")
+    public ResponseEntity<?> searchUsers(@RequestParam String term) {
+        try {
+            List<User> users = userService.searchUsers(term);
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to search users: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

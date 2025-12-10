@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -92,4 +93,56 @@ public class UserService {
         return user;
     }
 
+    // ADMIN OPERATIONS
+
+    /**
+     * Delete a user by ID
+     */
+    public void deleteUser(Integer userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+        userRepository.deleteById(userId);
+    }
+
+    /**
+     * Update a user
+     */
+    public User updateUser(Integer userId, User userDetails) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+
+        User existingUser = userOptional.get();
+
+        // Update fields
+        if (userDetails.getUsername() != null) {
+            existingUser.setUsername(userDetails.getUsername());
+        }
+        if (userDetails.getEmail() != null) {
+            existingUser.setEmail(userDetails.getEmail());
+        }
+
+        return userRepository.save(existingUser);
+    }
+
+    /**
+     * Search users by username or email
+     */
+    public List<User> searchUsers(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getAllUsers();
+        }
+
+        List<User> allUsers = userRepository.findAll();
+        String lowerSearchTerm = searchTerm.toLowerCase();
+
+        return allUsers.stream()
+                .filter(user ->
+                        user.getUsername().toLowerCase().contains(lowerSearchTerm) ||
+                                user.getEmail().toLowerCase().contains(lowerSearchTerm)
+                )
+                .collect(Collectors.toList());
+    }
 }

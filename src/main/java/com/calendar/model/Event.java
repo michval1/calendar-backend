@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -71,6 +68,12 @@ public class Event {
     // This is not persisted to database, but used to transfer permission data
     @Transient
     private Map<Integer, String> userPermissions = new HashMap<>();
+
+    // NEW: Transient field for reminder minutes (e.g., [15, 30, 60])
+    // This is sent/received from frontend but not stored directly in event table
+    // Actual reminders are stored in the reminder table
+    @Transient
+    private List<Integer> reminderMinutes = new ArrayList<>();
 
     // Manually defined getters and setters
     public Integer getId() {
@@ -191,6 +194,14 @@ public class Event {
 
     public void setUserPermissions(Map<Integer, String> userPermissions) {
         this.userPermissions = userPermissions;
+    }
+
+    public List<Integer> getReminderMinutes() {
+        return reminderMinutes;
+    }
+
+    public void setReminderMinutes(List<Integer> reminderMinutes) {
+        this.reminderMinutes = reminderMinutes;
     }
 
     public void shareWithUser(User user) {
