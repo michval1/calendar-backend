@@ -2,6 +2,7 @@ package com.calendar.controller;
 
 import com.calendar.model.Event;
 import com.calendar.service.EventService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ public class EventController {
      */
     @GetMapping
     public ResponseEntity<?> getAllEvents(
+            @Valid
             @RequestParam Integer userId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
@@ -141,7 +143,9 @@ public class EventController {
      * This is the ONLY reminder-specific endpoint - everything else is handled through event endpoints!
      */
     @GetMapping("/reminders/pending")
-    public ResponseEntity<?> getPendingReminders(@RequestParam Integer userId) {
+    public ResponseEntity<?> getPendingReminders(
+            @Valid
+            @RequestParam Integer userId) {
         try {
             List<?> reminders = eventService.getPendingReminders(userId);
             return new ResponseEntity<>(reminders, HttpStatus.OK);

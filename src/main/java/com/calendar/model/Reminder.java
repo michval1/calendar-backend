@@ -56,95 +56,46 @@ public class Reminder {
         this.message = "Event \"" + event.getTitle() + "\" starts in " + minutesBeforeEvent + " minutes";
     }
 
-    // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() {return id;}
+    public Event getEvent() {return event;}
+    public User getUser() {return user;}
+    public LocalDateTime getReminderTime() {return reminderTime;}
+    public Integer getMinutesBeforeEvent() {return minutesBeforeEvent;}
+    public Boolean getIsSent() {return isSent;}
+    public LocalDateTime getCreatedAt() {return createdAt;}
+    public LocalDateTime getSentAt() {return sentAt;}
+    public String getReminderType() {return reminderType;}
+    public String getMessage() {return message;}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
-    public Event getEvent() {
-        return event;
-    }
 
-    public void setEvent(Event event) {
-        this.event = event;
-        if (event != null && this.minutesBeforeEvent != null) {
-            this.reminderTime = event.getStartTime().minusMinutes(this.minutesBeforeEvent);
-        }
-    }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getReminderTime() {
-        return reminderTime;
-    }
-
-    public void setReminderTime(LocalDateTime reminderTime) {
-        this.reminderTime = reminderTime;
-    }
-
-    public Integer getMinutesBeforeEvent() {
-        return minutesBeforeEvent;
-    }
-
+    public void setId(Integer id) {this.id = id;}
     public void setMinutesBeforeEvent(Integer minutesBeforeEvent) {
         this.minutesBeforeEvent = minutesBeforeEvent;
         if (this.event != null) {
             this.reminderTime = this.event.getStartTime().minusMinutes(minutesBeforeEvent);
         }
     }
-
-    public Boolean getIsSent() {
-        return isSent;
+    public void setEvent(Event event) {
+        this.event = event;
+        if (event != null && this.minutesBeforeEvent != null) {
+            this.reminderTime = event.getStartTime().minusMinutes(this.minutesBeforeEvent);
+        }
     }
-
+    public void setUser(User user) {this.user = user;}
+    public void setReminderTime(LocalDateTime reminderTime) {this.reminderTime = reminderTime;}
     public void setIsSent(Boolean isSent) {
         this.isSent = isSent;
         if (isSent && this.sentAt == null) {
             this.sentAt = LocalDateTime.now();
         }
     }
+    public void setCreatedAt(LocalDateTime createdAt) {this.createdAt = createdAt;}
+    public void setSentAt(LocalDateTime sentAt) {this.sentAt = sentAt;}
+    public void setReminderType(String reminderType) {this.reminderType = reminderType;}
+    public void setMessage(String message) {this.message = message;}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getSentAt() {
-        return sentAt;
-    }
-
-    public void setSentAt(LocalDateTime sentAt) {
-        this.sentAt = sentAt;
-    }
-
-    public String getReminderType() {
-        return reminderType;
-    }
-
-    public void setReminderType(String reminderType) {
-        this.reminderType = reminderType;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     @Override
     public String toString() {

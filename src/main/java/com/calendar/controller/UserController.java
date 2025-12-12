@@ -70,26 +70,6 @@ public class UserController {
         }
     }
 
-    @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.10:3000"})
-    @GetMapping("/cors-test")
-    public ResponseEntity<?> testCors() {
-        return ResponseEntity.ok(Map.of("message", "CORS works!"));
-    }
-
-    // New endpoints for finding users by email
-
-    @GetMapping
-    public ResponseEntity<?> getAllUsers() {
-        try {
-            List<User> users = userService.getAllUsers();
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Failed to fetch users: " + e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         try {
