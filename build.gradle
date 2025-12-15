@@ -21,12 +21,20 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test' //test
+
 	implementation 'mysql:mysql-connector-java:8.0.32'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0' 	//test
+	testImplementation 'org.mockito:mockito-core:5.5.0' 			//test
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.5.0' 	//test
 }
 
 tasks.named('test') {

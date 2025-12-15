@@ -14,7 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.*;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -22,12 +24,9 @@ import static org.hamcrest.Matchers.*;
 
 /**
  * Unit testy pre UserController.
- * 
+ *
  * <p>Testuje REST API endpointy pre správu používateľov.</p>
- * 
- * @author Andrej
- * @version 1.0
- * @since 2024
+ *
  */
 @WebMvcTest(UserController.class)
 @DisplayName("UserController Unit Tests")
@@ -60,8 +59,8 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/users/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testUser)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testUser)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.username", is("testuser")))
@@ -75,12 +74,12 @@ class UserControllerTest {
     void registerUser_Failure() throws Exception {
         // Arrange
         when(userService.registerUser(any(User.class)))
-            .thenThrow(new RuntimeException("Email already exists"));
+                .thenThrow(new RuntimeException("Email already exists"));
 
         // Act & Assert
         mockMvc.perform(post("/api/users/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testUser)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testUser)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("Registration failed")));
     }
@@ -93,8 +92,8 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testUser)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testUser)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.username", is("testuser")));
@@ -108,13 +107,13 @@ class UserControllerTest {
         // Arrange
         Map<String, String> payload = new HashMap<>();
         payload.put("userId", "1");
-        
+
         doNothing().when(userService).saveActiveUser(1);
 
         // Act & Assert
         mockMvc.perform(post("/api/users/active")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(payload)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message", is("Active user saved successfully")));
 
@@ -129,8 +128,8 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/users/active")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(payload)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("User ID is required")));
 
@@ -146,8 +145,8 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/users/active")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(payload)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Invalid user ID format")));
     }
@@ -160,7 +159,7 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/users/email/test@example.com")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is("testuser")));
 
@@ -175,7 +174,7 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/users/email/nonexistent@example.com")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", containsString("not found")));
     }
@@ -186,13 +185,13 @@ class UserControllerTest {
         // Arrange
         Map<String, String> payload = new HashMap<>();
         payload.put("email", "test@example.com");
-        
+
         when(userService.findOrCreateUserByEmail("test@example.com")).thenReturn(testUser);
 
         // Act & Assert
         mockMvc.perform(post("/api/users/find-or-create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(payload)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is("testuser")));
 
@@ -207,8 +206,8 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/users/find-or-create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(payload)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Email is required")));
     }
@@ -221,13 +220,13 @@ class UserControllerTest {
         user2.setId(2);
         user2.setUsername("user2");
         user2.setEmail("user2@example.com");
-        
+
         List<User> users = Arrays.asList(testUser, user2);
         when(userService.getAllUsers()).thenReturn(users);
 
         // Act & Assert
         mockMvc.perform(get("/api/users")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].username", is("testuser")))
@@ -244,7 +243,7 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(delete("/api/users/1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message", is("User deleted successfully")));
 
@@ -259,7 +258,7 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(delete("/api/users/999")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message", containsString("Failed to delete user")));
     }
@@ -272,13 +271,13 @@ class UserControllerTest {
         updatedUser.setId(1);
         updatedUser.setUsername("updateduser");
         updatedUser.setEmail("updated@example.com");
-        
+
         when(userService.updateUser(eq(1), any(User.class))).thenReturn(updatedUser);
 
         // Act & Assert
         mockMvc.perform(put("/api/users/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedUser)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedUser)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is("updateduser")))
                 .andExpect(jsonPath("$.email", is("updated@example.com")));
@@ -291,12 +290,12 @@ class UserControllerTest {
     void updateUser_Failure() throws Exception {
         // Arrange
         when(userService.updateUser(eq(999), any(User.class)))
-            .thenThrow(new RuntimeException("User not found"));
+                .thenThrow(new RuntimeException("User not found"));
 
         // Act & Assert
         mockMvc.perform(put("/api/users/999")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testUser)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testUser)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("Failed to update user")));
     }
@@ -310,8 +309,8 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/users/search")
-                .param("term", "test")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .param("term", "test")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].username", is("testuser")));
@@ -327,8 +326,8 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/users/search")
-                .param("term", "nonexistent")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .param("term", "nonexistent")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -341,7 +340,7 @@ class UserControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/users")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message", containsString("Failed to fetch users")));
     }

@@ -12,6 +12,20 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * REST Controller pre správu udalostí a pripomienok.
+ *
+ * <p>Poskytuje RESTful API endpointy pre:
+ * <ul>
+ *   <li>CRUD operácie s udalosťami</li>
+ *   <li>Vyhľadávanie vlastných a zdieľaných udalostí</li>
+ *   <li>Správu pripomienok</li>
+ *   <li>Administrátorské funkcie</li>
+ * </ul></p>
+ *
+ * <p>Všetky endpointy vracajú JSON odpovede a používajú HTTP status kódy
+ * na indikáciu úspechu alebo chyby operácie.</p>
+ */
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.10:3000"})
 @RestController
 @RequestMapping("/api/events")
@@ -21,19 +35,25 @@ public class EventController {
     private EventService eventService;
 
     /**
-     * GET /api/events?userId={userId}&start={start}&end={end}
+     * Vráti všetky udalosti používateľa rozdelené do dvoch kategórií.
      *
-     * Returns ALL events for a user (both owned and shared) in separate arrays.
-     * Optional date range filtering with start and end parameters.
+     * <p>Endpoint: GET /api/events?userId={userId}&start={start}&end={end}</p>
      *
-     * IMPORTANT: ownedEvents contains ONLY events created by the user
-     *            sharedEvents contains ONLY events shared with the user (created by others)
+     * <p>Vracia objekt s dvoma poľami:
+     * <ul>
+     *   <li>ownedEvents: udalosti vytvorené týmto používateľom</li>
+     *   <li>sharedEvents: udalosti zdieľané s týmto používateľom (vytvorené inými)</li>
+     * </ul></p>
      *
-     * Response format:
-     * {
-     *   "ownedEvents": [...],    // Events created by this user
-     *   "sharedEvents": [...]    // Events created by others and shared with this user
-     * }
+     * @param userId ID používateľa (povinný parameter)
+     * @param start začiatok časového rozsahu (voliteľný, ISO 8601 formát)
+     * @param end koniec časového rozsahu (voliteľný, ISO 8601 formát)
+     * @return ResponseEntity s objektom obsahujúcim ownedEvents a sharedEvents
+     *
+     * @apiNote Ak sú uvedené start a end, vrátia sa len udalosti v danom rozsahu.
+     *          Ak nie sú uvedené, vrátia sa všetky udalosti.
+     *
+     * @example GET /api/events?userId=1&start=2024-01-01T00:00:00&end=2024-01-31T23:59:59
      */
     @GetMapping
     public ResponseEntity<?> getAllEvents(
@@ -72,10 +92,23 @@ public class EventController {
     }
 
     /**
-     * POST /api/events?userId={userId}
+     * Vytvorí novú udalosť pre používateľa.
      *
-     * Creates a new event. Include sharing info in the event object if needed.
-     * The Event object should contain all necessary fields including sharedWith and userPermissions.
+     * <p>Endpoint: POST /api/events?userId={userId}</p>
+     *
+     * <p>Request body musí obsahovať Event objekt so všetkými povinnými poľami.
+     * Voliteľne môže obsahovať nastavenia zdieľania (sharedWith, userPermissions)
+     * a pripomienky (reminderMinutes).</p>
+     *
+     * @param event objekt udalosti s údajmi (JSON v request body)
+     * @param userId ID vlastníka udalosti (query parameter)
+     * @return ResponseEntity s vytvorenou udalosťou (vrátane ID) alebo chybovou správou
+     *
+     * @apiNote Automaticky nastaví vlastníka udalosti podľa userId.
+     *          Vráti HTTP 201 Created pri úspechu.
+     *
+     * @example POST /api/events?userId=1
+     *          Body: {"title": "Meeting", "startTime": "2024-01-15T10:00:00", ...}
      */
     @PostMapping
     public ResponseEntity<?> createEvent(
@@ -92,10 +125,22 @@ public class EventController {
     }
 
     /**
-     * PUT /api/events/{eventId}?userId={userId}
+     * Aktualizuje existujúcu udalosť.
      *
-     * Updates an existing event. Can update any field including sharing settings.
-     * Requires userId to verify that the user has permission to update the event.
+     * <p>Endpoint: PUT /api/events/{eventId}?userId={userId}</p>
+     *
+     * <p>Aktualizuje všetky polia udalosti vrátane zdieľania a pripomienok.
+     * Vyžaduje userId na overenie oprávnenia na úpravu udalosti.</p>
+     *
+     * @param eventId ID udalosti na aktualizáciu (path parameter)
+     * @param event nové údaje udalosti (JSON v request body)
+     * @param userId ID používateľa vykonávajúceho aktualizáciu (query parameter)
+     * @return ResponseEntity s aktualizovanou udalosťou alebo chybovou správou
+     *
+     * @apiNote Používateľ musí byť vlastník alebo mať EDIT/ADMIN oprávnenie.
+     *
+     * @example PUT /api/events/123?userId=1
+     *          Body: {"title": "Updated Meeting", "startTime": "2024-01-15T11:00:00", ...}
      */
     @PutMapping("/{eventId}")
     public ResponseEntity<?> updateEvent(
@@ -114,10 +159,20 @@ public class EventController {
     }
 
     /**
-     * DELETE /api/events/{eventId}?userId={userId}
+     * Vymaže udalosť.
      *
-     * Deletes an event. Requires userId to verify that the user has permission to delete the event.
-     * Only the event owner or users with ADMIN permission can delete.
+     * <p>Endpoint: DELETE /api/events/{eventId}?userId={userId}</p>
+     *
+     * <p>Vymaže udalosť vrátane všetkých spojených pripomienok a oprávnení.
+     * Vyžaduje userId na overenie oprávnenia na vymazanie.</p>
+     *
+     * @param eventId ID udalosti na vymazanie (path parameter)
+     * @param userId ID používateľa vykonávajúceho vymazanie (query parameter)
+     * @return ResponseEntity s potvrdením alebo chybovou správou
+     *
+     * @apiNote Vymazať môže len vlastník alebo používateľ s ADMIN oprávnením.
+     *
+     * @example DELETE /api/events/123?userId=1
      */
     @DeleteMapping("/{eventId}")
     public ResponseEntity<?> deleteEvent(
@@ -137,10 +192,19 @@ public class EventController {
     }
 
     /**
-     * GET /api/events/reminders/pending?userId={userId}
+     * Vráti čakajúce pripomienky používateľa.
      *
-     * Get pending reminders for a user (that should be shown now)
-     * This is the ONLY reminder-specific endpoint - everything else is handled through event endpoints!
+     * <p>Endpoint: GET /api/events/reminders/pending?userId={userId}</p>
+     *
+     * <p>Vracia zoznam pripomienok, ktoré ešte neboli odoslané a ich čas
+     * odoslania už nastal. Používa sa na zobrazenie notifikácií používateľovi.</p>
+     *
+     * @param userId ID používateľa (query parameter)
+     * @return ResponseEntity so zoznamom čakajúcich pripomienok
+     *
+     * @apiNote Tento endpoint sa volá periodicky z frontend aplikácie.
+     *
+     * @example GET /api/events/reminders/pending?userId=1
      */
     @GetMapping("/reminders/pending")
     public ResponseEntity<?> getPendingReminders(
@@ -157,9 +221,17 @@ public class EventController {
     }
 
     /**
-     * PUT /api/events/reminders/{reminderId}/mark-sent
+     * Označí pripomienku ako odoslanú.
      *
-     * Mark a reminder as sent (shown to user)
+     * <p>Endpoint: PUT /api/events/reminders/{reminderId}/mark-sent</p>
+     *
+     * <p>Používa sa po zobrazení notifikácie používateľovi, aby sa
+     * pripomienka nezobrazila znova.</p>
+     *
+     * @param reminderId ID pripomienky (path parameter)
+     * @return ResponseEntity s potvrdením alebo chybovou správou
+     *
+     * @example PUT /api/events/reminders/456/mark-sent
      */
     @PutMapping("/reminders/{reminderId}/mark-sent")
     public ResponseEntity<?> markReminderAsSent(@PathVariable Integer reminderId) {
@@ -176,10 +248,18 @@ public class EventController {
     }
 
     /**
-     * ADMIN ENDPOINT
-     * GET /api/events/reminders/all
+     * ADMIN ENDPOINT - Vráti všetky pripomienky v systéme.
      *
-     * Get all reminders in the system (for admin panel)
+     * <p>Endpoint: GET /api/events/reminders/all</p>
+     *
+     * <p>Používa sa v admin paneli na prehľad všetkých pripomienok
+     * všetkých používateľov.</p>
+     *
+     * @return ResponseEntity so zoznamom všetkých pripomienok
+     *
+     * @apiNote Tento endpoint by mal byť chránený autorizáciou na admin rolu.
+     *
+     * @example GET /api/events/reminders/all
      */
     @GetMapping("/reminders/all")
     public ResponseEntity<?> getAllReminders() {
@@ -194,10 +274,18 @@ public class EventController {
     }
 
     /**
-     * ADMIN ENDPOINT
-     * DELETE /api/events/reminders/{reminderId}
+     * ADMIN ENDPOINT - Vymaže pripomienku.
      *
-     * Delete a reminder (for admin panel)
+     * <p>Endpoint: DELETE /api/events/reminders/{reminderId}</p>
+     *
+     * <p>Používa sa v admin paneli na manuálne vymazanie pripomienok.</p>
+     *
+     * @param reminderId ID pripomienky na vymazanie (path parameter)
+     * @return ResponseEntity s potvrdením alebo chybovou správou
+     *
+     * @apiNote Tento endpoint by mal byť chránený autorizáciou na admin rolu.
+     *
+     * @example DELETE /api/events/reminders/456
      */
     @DeleteMapping("/reminders/{reminderId}")
     public ResponseEntity<?> deleteReminder(@PathVariable Integer reminderId) {

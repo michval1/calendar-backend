@@ -10,10 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit testy pre User model.
  * 
  * <p>Testuje gettery, settery a základnú funkčnosť User entity.</p>
- * 
- * @author Andrej
- * @version 1.0
- * @since 2024
+ *
  */
 @DisplayName("User Model Unit Tests")
 class UserTest {
@@ -28,7 +25,6 @@ class UserTest {
     @Test
     @DisplayName("Vytvorenie prázdneho používateľa")
     void createEmptyUser() {
-        // Assert
         assertNotNull(user);
         assertNull(user.getId());
         assertNull(user.getUsername());
@@ -41,7 +37,6 @@ class UserTest {
         // Act
         user.setId(1);
 
-        // Assert
         assertEquals(1, user.getId());
     }
 
@@ -51,7 +46,6 @@ class UserTest {
         // Act
         user.setUsername("testuser");
 
-        // Assert
         assertEquals("testuser", user.getUsername());
     }
 
@@ -61,7 +55,6 @@ class UserTest {
         // Act
         user.setEmail("test@example.com");
 
-        // Assert
         assertEquals("test@example.com", user.getEmail());
     }
 
@@ -73,7 +66,6 @@ class UserTest {
         user.setUsername("john_doe");
         user.setEmail("john.doe@example.com");
 
-        // Assert
         assertEquals(1, user.getId());
         assertEquals("john_doe", user.getUsername());
         assertEquals("john.doe@example.com", user.getEmail());
@@ -85,7 +77,6 @@ class UserTest {
         // Act
         User newUser = new User(2, "jane_doe", "jane@example.com");
 
-        // Assert
         assertEquals(2, newUser.getId());
         assertEquals("jane_doe", newUser.getUsername());
         assertEquals("jane@example.com", newUser.getEmail());
@@ -104,7 +95,6 @@ class UserTest {
         user.setUsername(null);
         user.setEmail(null);
 
-        // Assert
         assertNull(user.getId());
         assertNull(user.getUsername());
         assertNull(user.getEmail());
@@ -116,7 +106,6 @@ class UserTest {
         // Act
         user.setUsername("");
 
-        // Assert
         assertEquals("", user.getUsername());
     }
 
@@ -126,7 +115,6 @@ class UserTest {
         // Act
         user.setEmail("");
 
-        // Assert
         assertEquals("", user.getEmail());
     }
 
@@ -138,7 +126,6 @@ class UserTest {
         user.setUsername("testuser");
         User sameUser = user;
 
-        // Assert
         assertSame(user, sameUser);
     }
 
@@ -149,7 +136,6 @@ class UserTest {
         User user1 = new User(1, "user1", "user1@example.com");
         User user2 = new User(2, "user2", "user2@example.com");
 
-        // Assert
         assertNotSame(user1, user2);
     }
 
@@ -159,7 +145,6 @@ class UserTest {
         // Act
         user.setUsername("user with spaces");
 
-        // Assert
         assertEquals("user with spaces", user.getUsername());
     }
 
@@ -169,7 +154,6 @@ class UserTest {
         // Act
         user.setEmail("Test@EXAMPLE.COM");
 
-        // Assert
         assertEquals("Test@EXAMPLE.COM", user.getEmail());
     }
 
@@ -182,7 +166,6 @@ class UserTest {
         // Act
         user.setUsername(longUsername);
 
-        // Assert
         assertEquals(50, user.getUsername().length());
         assertEquals(longUsername, user.getUsername());
     }
@@ -196,7 +179,6 @@ class UserTest {
         // Act
         user.setEmail(longEmail);
 
-        // Assert
         assertEquals(longEmail, user.getEmail());
     }
 
@@ -206,7 +188,6 @@ class UserTest {
         // Act
         user.setUsername("user_name-123");
 
-        // Assert
         assertEquals("user_name-123", user.getUsername());
     }
 
@@ -216,7 +197,6 @@ class UserTest {
         // Act
         user.setUsername("12345");
 
-        // Assert
         assertEquals("12345", user.getUsername());
     }
 
@@ -226,7 +206,6 @@ class UserTest {
         // Act
         user.setEmail("user@mail.example.com");
 
-        // Assert
         assertEquals("user@mail.example.com", user.getEmail());
     }
 
@@ -236,7 +215,6 @@ class UserTest {
         // Act
         user.setEmail("user+tag@example.com");
 
-        // Assert
         assertEquals("user+tag@example.com", user.getEmail());
     }
 
@@ -253,7 +231,6 @@ class UserTest {
         user.setUsername("newusername");
         user.setEmail("new@example.com");
 
-        // Assert
         assertEquals(2, user.getId());
         assertEquals("newusername", user.getUsername());
         assertEquals("new@example.com", user.getEmail());

@@ -11,6 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST Controller pre správu používateľov.
+ *
+ * <p>Poskytuje RESTful API endpointy pre:
+ * <ul>
+ *   <li>Registráciu a prihlásenie používateľov</li>
+ *   <li>Vyhľadávanie používateľov</li>
+ *   <li>Admin operácie (CRUD používateľov)</li>
+ * </ul></p>
+ */
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.10:3000"})
 @RestController
 @RequestMapping("/api/users")
@@ -19,6 +29,17 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Zaregistruje nového používateľa v systéme.
+     *
+     * <p>Endpoint: POST /api/users/register</p>
+     *
+     * @param user údaje nového používateľa (JSON v request body)
+     * @return ResponseEntity s registrovaným používateľom alebo chybovou správou
+     *
+     * @example POST /api/users/register
+     *          Body: {"username": "john_doe", "email": "john@example.com"}
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
@@ -31,6 +52,20 @@ public class UserController {
         }
     }
 
+    /**
+     * Prihlási používateľa do systému.
+     *
+     * <p>Endpoint: POST /api/users/login</p>
+     *
+     * <p>Ak používateľ neexistuje, automaticky ho vytvorí.
+     * Používa sa po Firebase autentifikácii.</p>
+     *
+     * @param user objekt s username a email (JSON v request body)
+     * @return ResponseEntity s prihláseným používateľom alebo chybovou správou
+     *
+     * @example POST /api/users/login
+     *          Body: {"username": "john_doe", "email": "john@example.com"}
+     */
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
         try {
@@ -43,6 +78,17 @@ public class UserController {
         }
     }
 
+    /**
+     * Uloží aktívneho používateľa (helper endpoint pre debugging).
+     *
+     * <p>Endpoint: POST /api/users/active</p>
+     *
+     * @param payload objekt s userId (JSON v request body)
+     * @return ResponseEntity s potvrdením alebo chybovou správou
+     *
+     * @example POST /api/users/active
+     *          Body: {"userId": "1"}
+     */
     @PostMapping("/active")
     public ResponseEntity<?> saveActiveUser(@RequestBody Map<String, String> payload) {
         try {
@@ -70,6 +116,16 @@ public class UserController {
         }
     }
 
+    /**
+     * Vyhľadá používateľa podľa emailovej adresy.
+     *
+     * <p>Endpoint: GET /api/users/email/{email}</p>
+     *
+     * @param email emailová adresa používateľa (path parameter)
+     * @return ResponseEntity s používateľom alebo chybovou správou
+     *
+     * @example GET /api/users/email/john@example.com
+     */
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         try {
@@ -88,6 +144,20 @@ public class UserController {
         }
     }
 
+    /**
+     * Nájde alebo vytvorí používateľa podľa emailu.
+     *
+     * <p>Endpoint: POST /api/users/find-or-create</p>
+     *
+     * <p>Ak používateľ s emailom neexistuje, vytvorí nového.
+     * Používa sa pri zdieľaní udalostí s novými používateľmi.</p>
+     *
+     * @param payload objekt s email (JSON v request body)
+     * @return ResponseEntity s nájdeným/vytvoreným používateľom
+     *
+     * @example POST /api/users/find-or-create
+     *          Body: {"email": "new_user@example.com"}
+     */
     @PostMapping("/find-or-create")
     public ResponseEntity<?> findOrCreateUserByEmail(@RequestBody Map<String, String> payload) {
         try {
@@ -107,8 +177,19 @@ public class UserController {
         }
     }
 
-    // ADMIN ENDPOINTS
+    // ==================== ADMIN ENDPOINTS ====================
 
+    /**
+     * ADMIN ENDPOINT - Vráti všetkých používateľov v systéme.
+     *
+     * <p>Endpoint: GET /api/users</p>
+     *
+     * @return ResponseEntity so zoznamom všetkých používateľov
+     *
+     * @apiNote Tento endpoint by mal byť chránený autorizáciou na admin rolu.
+     *
+     * @example GET /api/users
+     */
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
         try {
@@ -122,8 +203,16 @@ public class UserController {
     }
 
     /**
-     * DELETE /api/users/{userId}
-     * Admin endpoint to delete a user
+     * ADMIN ENDPOINT - Vymaže používateľa.
+     *
+     * <p>Endpoint: DELETE /api/users/{userId}</p>
+     *
+     * @param userId ID používateľa na vymazanie (path parameter)
+     * @return ResponseEntity s potvrdením alebo chybovou správou
+     *
+     * @apiNote Tento endpoint by mal byť chránený autorizáciou na admin rolu.
+     *
+     * @example DELETE /api/users/123
      */
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable Integer userId) {
@@ -140,8 +229,18 @@ public class UserController {
     }
 
     /**
-     * PUT /api/users/{userId}
-     * Admin endpoint to update a user
+     * ADMIN ENDPOINT - Aktualizuje údaje používateľa.
+     *
+     * <p>Endpoint: PUT /api/users/{userId}</p>
+     *
+     * @param userId ID používateľa na aktualizáciu (path parameter)
+     * @param userDetails nové údaje používateľa (JSON v request body)
+     * @return ResponseEntity s aktualizovaným používateľom
+     *
+     * @apiNote Tento endpoint by mal byť chránený autorizáciou na admin rolu.
+     *
+     * @example PUT /api/users/123
+     *          Body: {"username": "new_username", "email": "new@example.com"}
      */
     @PutMapping("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable Integer userId, @RequestBody User userDetails) {
@@ -156,8 +255,17 @@ public class UserController {
     }
 
     /**
-     * GET /api/users/search?term={searchTerm}
-     * Search users by username or email
+     * Vyhľadá používateľov podľa vyhľadávacieho reťazca.
+     *
+     * <p>Endpoint: GET /api/users/search?term={searchTerm}</p>
+     *
+     * <p>Hľadá v používateľskom mene aj emaile (case-insensitive).
+     * Používa sa pri zdieľaní udalostí na nájdenie používateľov.</p>
+     *
+     * @param term vyhľadávací reťazec (query parameter)
+     * @return ResponseEntity so zoznamom nájdených používateľov
+     *
+     * @example GET /api/users/search?term=john
      */
     @GetMapping("/search")
     public ResponseEntity<?> searchUsers(@RequestParam String term) {

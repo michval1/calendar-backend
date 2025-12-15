@@ -17,10 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit testy pre EndTimeAfterStartTimeValidator.
  * 
  * <p>Testuje validáciu časov udalostí.</p>
- * 
- * @author Andrej
- * @version 1.0
- * @since 2024
+ *
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("EndTimeAfterStartTimeValidator Unit Tests")
@@ -39,156 +36,125 @@ class EndTimeAfterStartTimeValidatorTest {
     @Test
     @DisplayName("Validácia úspešná - endTime je po startTime")
     void isValid_EndTimeAfterStartTime_ReturnsTrue() {
-        // Arrange
         Event event = new Event();
         event.setStartTime(LocalDateTime.of(2024, 12, 20, 10, 0));
         event.setEndTime(LocalDateTime.of(2024, 12, 20, 11, 0));
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertTrue(isValid);
     }
 
     @Test
     @DisplayName("Validácia neúspešná - endTime je pred startTime")
     void isValid_EndTimeBeforeStartTime_ReturnsFalse() {
-        // Arrange
         Event event = new Event();
         event.setStartTime(LocalDateTime.of(2024, 12, 20, 11, 0));
         event.setEndTime(LocalDateTime.of(2024, 12, 20, 10, 0));
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertFalse(isValid);
     }
 
     @Test
     @DisplayName("Validácia neúspešná - rovnaký čas")
     void isValid_SameTime_ReturnsFalse() {
-        // Arrange
         Event event = new Event();
         LocalDateTime sameTime = LocalDateTime.of(2024, 12, 20, 10, 0);
         event.setStartTime(sameTime);
         event.setEndTime(sameTime);
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertFalse(isValid);
     }
 
     @Test
     @DisplayName("Validácia prejde - event je null")
     void isValid_NullEvent_ReturnsTrue() {
-        // Act
         boolean isValid = validator.isValid(null, context);
 
-        // Assert
         assertTrue(isValid, "Validácia by mala prejsť pre null event");
     }
 
     @Test
     @DisplayName("Validácia prejde - startTime je null")
     void isValid_NullStartTime_ReturnsTrue() {
-        // Arrange
         Event event = new Event();
         event.setStartTime(null);
         event.setEndTime(LocalDateTime.of(2024, 12, 20, 11, 0));
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertTrue(isValid, "Validácia by mala prejsť ak je startTime null");
     }
 
     @Test
     @DisplayName("Validácia prejde - endTime je null")
     void isValid_NullEndTime_ReturnsTrue() {
-        // Arrange
         Event event = new Event();
         event.setStartTime(LocalDateTime.of(2024, 12, 20, 10, 0));
         event.setEndTime(null);
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertTrue(isValid, "Validácia by mala prejsť ak je endTime null");
     }
 
     @Test
     @DisplayName("Validácia prejde - oba časy sú null")
     void isValid_BothTimesNull_ReturnsTrue() {
-        // Arrange
         Event event = new Event();
         event.setStartTime(null);
         event.setEndTime(null);
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertTrue(isValid, "Validácia by mala prejsť ak sú oba časy null");
     }
 
     @Test
     @DisplayName("Validácia úspešná - endTime je ďaleko v budúcnosti")
     void isValid_EndTimeFarInFuture_ReturnsTrue() {
-        // Arrange
         Event event = new Event();
         event.setStartTime(LocalDateTime.of(2024, 12, 20, 10, 0));
         event.setEndTime(LocalDateTime.of(2025, 12, 20, 10, 0));
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertTrue(isValid);
     }
 
     @Test
     @DisplayName("Validácia úspešná - rozdiel 1 minúta")
     void isValid_OneMinuteDifference_ReturnsTrue() {
-        // Arrange
         Event event = new Event();
         event.setStartTime(LocalDateTime.of(2024, 12, 20, 10, 0));
         event.setEndTime(LocalDateTime.of(2024, 12, 20, 10, 1));
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertTrue(isValid);
     }
 
     @Test
     @DisplayName("Validácia úspešná - endTime o sekundu neskôr")
     void isValid_OneSecondDifference_ReturnsTrue() {
-        // Arrange
         Event event = new Event();
         event.setStartTime(LocalDateTime.of(2024, 12, 20, 10, 0, 0));
         event.setEndTime(LocalDateTime.of(2024, 12, 20, 10, 0, 1));
 
-        // Act
         boolean isValid = validator.isValid(event, context);
 
-        // Assert
         assertTrue(isValid);
     }
 
     @Test
     @DisplayName("Validácia - inicializácia validátora")
     void initialize_DoesNotThrow() {
-        // Arrange
         EndTimeAfterStartTime annotation = null;
 
-        // Act & Assert
         assertDoesNotThrow(() -> validator.initialize(annotation));
     }
 }

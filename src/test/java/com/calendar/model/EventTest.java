@@ -13,10 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit testy pre Event model.
  * 
  * <p>Testuje gettery, settery a business logiku Event entity.</p>
- * 
- * @author Andrej
- * @version 1.0
- * @since 2024
+ *
  */
 @DisplayName("Event Model Unit Tests")
 class EventTest {
