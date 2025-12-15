@@ -109,6 +109,18 @@ public class UserController {
 
     // ADMIN ENDPOINTS
 
+    @GetMapping
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<User> users = userService.getAllUsers();
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to fetch users: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * DELETE /api/users/{userId}
      * Admin endpoint to delete a user
